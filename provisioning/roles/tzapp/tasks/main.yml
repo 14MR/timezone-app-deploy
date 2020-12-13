@@ -1,0 +1,14 @@
+---
+- name: Pull timezone-app Docker image
+  docker_image:
+    name: "{{ docker_image }}"
+    source: pull
+
+- name: Create timezone-app containers
+  docker_container:
+    name: "{{ docker_container_name }}"
+    image: "{{ docker_image }}"
+    state: started
+    user: "{{ docker_user }}"
+    ports:
+      - "{{ docker_external_port }}:{{ docker_port }}"
