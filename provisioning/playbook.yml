@@ -3,9 +3,10 @@
   become: true
   vars:
     docker_container_name: "timezone-app"
-    docker_image: mr14mr/timezone-app:0.0.1
+    docker_image: mr14mr/timezone-app:0.0.2
     docker_port: 8080
     docker_external_port: 80
+    docker_user: "tzapp:tzapp"
 
   tasks:
     - name: Install aptitude using apt
@@ -78,5 +79,6 @@
         name: "{{ docker_container_name }}"
         image: "{{ docker_image }}"
         state: started
+        user: "{{ docker_user }}"
         ports:
-          - "{{ docker_port }}:{{ docker_external_port }}"
+          - "{{ docker_external_port }}:{{ docker_port }}"
