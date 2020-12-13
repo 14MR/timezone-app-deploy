@@ -1,0 +1,82 @@
+---
+- hosts: all
+  become: true
+  vars:
+    docker_container_name: "timezone-app"
+    docker_image: mr14mr/timezone-app:0.0.1
+    docker_port: 8080
+    docker_external_port: 80
+
+  tasks:
+    - name: Install aptitude using apt
+      apt: 
+        name: 
+          - aptitude
+        state: present 
+        update_cache: yes 
+        force_apt_get: yes
+
+    - name: Uninstall old versions of docker 
+      apt:
+        name:
+          - docker
+          - docker-engine
+          - docker.io 
+          - containerd 
+          - runc
+        state: absent
+
+    - name: Install docker dependencies
+      apt: 
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+        state: present 
+
+    - name: Add Docker apt key.
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+        state: present
+
+    - name: Add docker repository
+      apt_repository: 
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} edge"
+        state: present
+        update_cache: yes    
+
+    - name: Install docker-ce
+      apt: 
+          name: 
+            - docker-ce 
+            - docker-ce-cli 
+            - containerd.io
+          state: present 
+          update_cache: yes
+
+    - name: Install python3-pip
+      apt: 
+          name: 
+            - python3-pip
+          state: present 
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+        state: present
+
+    - name: Pull timezone-app Docker image
+      docker_image:
+        name: "{{ docker_image }}"
+        source: pull
+    
+    - name: Create timezone-app containers
+      docker_container:
+        name: "{{ docker_container_name }}"
+        image: "{{ docker_image }}"
+        state: started
+        ports:
+          - "{{ docker_port }}:{{ docker_external_port }}"

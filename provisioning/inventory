@@ -1,0 +1,1 @@
+timezoneapp ansible_ssh_host=docker.for.mac.localhost ansible_ssh_port=2222 ansible_user=vagrant ansible_password=vagrant ansible_python_interpreter=/usr/bin/python3
