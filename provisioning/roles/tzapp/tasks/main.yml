@@ -4,11 +4,15 @@
     name: "{{ docker_image }}"
     source: pull
 
-- name: Create timezone-app containers
+- name: Create timezone-app container
   docker_container:
-    name: "{{ docker_container_name }}"
+    name: "{{ docker_container_name }}-{{ item }}"
     image: "{{ docker_image }}"
     state: started
     user: "{{ docker_user }}"
     ports:
-      - "{{ docker_external_port }}:{{ docker_port }}"
+      - "{{ docker_port | string }}"
+    env:
+      VIRTUAL_HOST: "{{ virtual_host | string }}"
+      LETSENCRYPT_HOST: "{{ letsencrypt_host | string }}"
+  with_sequence: count="{{ docker_containers_count }}"

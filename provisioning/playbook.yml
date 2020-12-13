@@ -3,4 +3,8 @@
   become: true
   roles:
     - docker
-    - tzapp
+    - nginx-proxy
+    - role: tzapp
+      vars:
+        virtual_host: "int1.tst.iroha.tech"
+        letsencrypt_host: "int1.tst.iroha.tech"

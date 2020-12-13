@@ -1,5 +1,5 @@
 docker_container_name: "timezone-app"
 docker_image: mr14mr/timezone-app:0.0.2
 docker_port: 8080
-docker_external_port: 80
 docker_user: "tzapp:tzapp"
+docker_containers_count: 2

@@ -1,0 +1,40 @@
+---
+- name: Pull nginx-proxy Docker image
+  docker_image:
+    name: "{{ docker_nginx_proxy_image }}"
+    source: pull
+
+- name: Pull nginx-proxy-proxy-companion Docker image
+  docker_image:
+    name: "{{ docker_nginx_proxy_companion_image }}"
+    source: pull
+
+
+- name: Create nginx-proxy container
+  docker_container:
+    name: "nginx-proxy"
+    image: "{{ docker_nginx_proxy_image }}"
+    state: started
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - "/etc/nginx/certs"
+      - "/etc/nginx/vhost.d"
+      - "/usr/share/nginx/html"
+    restart_policy: always
+    ports:
+      - "80:80"
+      - "443:443"
+
+- name: Create proxy-companion container
+  docker_container:
+    name: "nginx-proxy-companion"
+    image: "{{ docker_nginx_proxy_companion_image }}"
+    state: started
+    restart_policy: always
+    volumes_from:
+      - "nginx-proxy"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/etc/acme.sh"
+    env:
+      DEFAULT_EMAIL: "{{ letsencrypt_default_email }}"
